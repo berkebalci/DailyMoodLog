@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.example.dailymoodapp.data.Mood
 import com.example.dailymoodapp.ui.MotivationSuggestionBox
 import com.example.dailymoodapp.ui.DailyActivitySuggestionBox
+import com.example.dailymoodapp.ui.MusicSuggestionBox
 import com.example.dailymoodapp.viewmodel.MoodViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -240,6 +241,12 @@ fun MoodDetailScreen(
             }
             item {
                 DailyActivitySuggestionBox(
+                    moodEmoji = mood.emoji,
+                    visible = motivationVisible
+                )
+            }
+            item {
+                MusicSuggestionBox(
                     moodEmoji = mood.emoji,
                     visible = motivationVisible
                 )
