@@ -123,30 +123,35 @@ fun MainScreen(viewModel: MoodViewModel) {
                 }
             }
         ) { paddingValues ->
-            if (moods.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No mood entries yet. Tap the '+' button to add your first mood.",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    items(moods) { mood ->
-                        MoodItem(
-                            mood = mood,
-                            onClick = { selectedMood = mood }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                GreetingByTime()
+                if (moods.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No mood entries yet. Tap the '+' button to add your first mood.",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
                         )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        items(moods) { mood ->
+                            MoodItem(
+                                mood = mood,
+                                onClick = { selectedMood = mood }
+                            )
+                        }
                     }
                 }
             }
@@ -389,4 +394,23 @@ fun MoodItem(mood: Mood, onClick: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+fun GreetingByTime() {
+    val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
+    val greeting = when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        in 18..22 -> "Good evening"
+        else -> "Good night"
+    }
+    Text(
+        text = greeting,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 4.dp, bottom = 12.dp),
+        textAlign = TextAlign.Center
+    )
 }
