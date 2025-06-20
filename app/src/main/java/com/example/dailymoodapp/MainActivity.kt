@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                MainScreen(viewModel)
+                AnaEkran(viewModel)
             }
         }
     }
@@ -46,56 +46,56 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(viewModel: MoodViewModel) {
-    val moods by viewModel.moods.collectAsState(initial = emptyList())
-    var selectedMood by remember { mutableStateOf<Mood?>(null) }
-    var showEditScreen by remember { mutableStateOf(false) }
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
+fun AnaEkran(viewModel: MoodViewModel) {
+    val moodlar by viewModel.moodList.collectAsState(initial = emptyList())
+    var seciliMood by remember { mutableStateOf<Mood?>(null) }
+    var duzenleEkrani by remember { mutableStateOf(false) }
+    var silOnay by remember { mutableStateOf(false) }
     
-    if (showEditScreen) {
-        MoodEntryEditScreen(
-            mood = selectedMood,
-            onSave = { updatedMood ->
-                if (selectedMood == null) {
-                    viewModel.addMood(updatedMood)
+    if (duzenleEkrani) {
+        MoodDuzenleEkran(
+            mood = seciliMood,
+            onSave = { guncelMood ->
+                if (seciliMood == null) {
+                    viewModel.moodEkle(guncelMood)
                 } else {
-                    viewModel.updateMood(updatedMood)
+                    viewModel.moodGuncelle(guncelMood)
                 }
-                showEditScreen = false
-                selectedMood = null
+                duzenleEkrani = false
+                seciliMood = null
             },
             onBackClick = {
-                showEditScreen = false
-                selectedMood = null
+                duzenleEkrani = false
+                seciliMood = null
             }
         )
-    } else if (selectedMood != null) {
-        MoodDetailScreen(
-            mood = selectedMood!!,
-            onBackClick = { selectedMood = null },
-            onEditClick = { showEditScreen = true },
-            onDeleteClick = { showDeleteConfirmation = true }
+    } else if (seciliMood != null) {
+        MoodDetayEkran(
+            mood = seciliMood!!,
+            onBackClick = { seciliMood = null },
+            onEditClick = { duzenleEkrani = true },
+            onDeleteClick = { silOnay = true }
         )
         
-        if (showDeleteConfirmation) {
+        if (silOnay) {
             AlertDialog(
-                onDismissRequest = { showDeleteConfirmation = false },
-                title = { Text("Delete Mood Entry") },
-                text = { Text("Are you sure you want to delete this mood entry?") },
+                onDismissRequest = { silOnay = false },
+                title = { Text("Mood Sil") },
+                text = { Text("Bu mood kaydını silmek istediğine emin misin?") },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            viewModel.deleteMood(selectedMood!!)
-                            selectedMood = null
-                            showDeleteConfirmation = false
+                            viewModel.moodSil(seciliMood!!)
+                            seciliMood = null
+                            silOnay = false
                         }
                     ) {
-                        Text("Delete")
+                        Text("Sil")
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDeleteConfirmation = false }) {
-                        Text("Cancel")
+                    TextButton(onClick = { silOnay = false }) {
+                        Text("Vazgeç")
                     }
                 }
             )
@@ -116,11 +116,11 @@ fun MainScreen(viewModel: MoodViewModel) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        selectedMood = null
-                        showEditScreen = true
+                        seciliMood = null
+                        duzenleEkrani = true
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add Mood")
+                    Icon(Icons.Default.Add, contentDescription = "Mood Ekle")
                 }
             }
         ) { paddingValues ->
@@ -129,15 +129,15 @@ fun MainScreen(viewModel: MoodViewModel) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                GreetingByTime()
-                if (moods.isEmpty()) {
+                ZamanSelamlama()
+                if (moodlar.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No mood entries yet. Tap the '+' button to add your first mood.",
+                            text = "Henüz mood eklenmedi. '+' butonuna basıp ilk moodunu ekle.",
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -147,10 +147,10 @@ fun MainScreen(viewModel: MoodViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        items(moods) { mood ->
-                            MoodItem(
+                        items(moodlar) { mood ->
+                            MoodSatir(
                                 mood = mood,
-                                onClick = { selectedMood = mood }
+                                onClick = { seciliMood = mood }
                             )
                         }
                     }
@@ -162,30 +162,30 @@ fun MainScreen(viewModel: MoodViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodDetailScreen(
+fun MoodDetayEkran(
     mood: Mood,
     onBackClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()) }
-    var motivationVisible by remember { mutableStateOf(false) }
+    var motivasyonGoster by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mood Details") },
+                title = { Text("Mood Detayları") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
                     }
                 },
                 actions = {
                     IconButton(onClick = onEditClick) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        Icon(Icons.Default.Edit, contentDescription = "Düzenle")
                     }
                     IconButton(onClick = onDeleteClick) {
-                        Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        Icon(Icons.Default.Delete, contentDescription = "Sil")
                     }
                 }
             )
@@ -222,7 +222,7 @@ fun MoodDetailScreen(
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = "Description",
+                            text = "Açıklama",
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -236,19 +236,19 @@ fun MoodDetailScreen(
             item {
                 MotivationSuggestionBox(
                     moodEmoji = mood.emoji,
-                    onLoaded = { motivationVisible = true }
+                    onLoaded = { motivasyonGoster = true }
                 )
             }
             item {
                 DailyActivitySuggestionBox(
                     moodEmoji = mood.emoji,
-                    visible = motivationVisible
+                    visible = motivasyonGoster
                 )
             }
             item {
                 MusicSuggestionBox(
                     moodEmoji = mood.emoji,
-                    visible = motivationVisible
+                    visible = motivasyonGoster
                 )
             }
         }
@@ -257,24 +257,24 @@ fun MoodDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodEntryEditScreen(
+fun MoodDuzenleEkran(
     mood: Mood?,
     onSave: (Mood) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var selectedEmoji by remember { mutableStateOf(mood?.emoji ?: "😊") }
-    var description by remember { mutableStateOf(mood?.description ?: "") }
-    var showSaveConfirmation by remember { mutableStateOf(false) }
+    var seciliEmoji by remember { mutableStateOf(mood?.emoji ?: "😊") }
+    var aciklama by remember { mutableStateOf(mood?.description ?: "") }
+    var kayitOnay by remember { mutableStateOf(false) }
     
-    val emojis = listOf("😊", "😌", "😢", "😡", "😴", "😍", "😔")
+    val emojiler = listOf("😊", "😌", "😢", "😡", "😴", "😍", "😔")
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (mood == null) "Add Mood" else "Edit Mood") },
+                title = { Text(if (mood == null) "Mood Ekle" else "Mood Düzenle") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
                     }
                 }
             )
@@ -287,31 +287,31 @@ fun MoodEntryEditScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Emoji selection row
+            // Emoji seçimi
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                emojis.forEach { emoji ->
+                emojiler.forEach { emoji ->
                     Box(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
                             .background(
-                                if (emoji == selectedEmoji) 
+                                if (emoji == seciliEmoji) 
                                     MaterialTheme.colorScheme.primaryContainer 
                                 else 
                                     Color.Transparent
                             )
                             .border(
                                 width = 2.dp,
-                                color = if (emoji == selectedEmoji) 
+                                color = if (emoji == seciliEmoji) 
                                     MaterialTheme.colorScheme.primary 
                                 else 
                                     Color.Transparent,
                                 shape = CircleShape
                             )
-                            .clickable { selectedEmoji = emoji },
+                            .clickable { seciliEmoji = emoji },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -322,43 +322,43 @@ fun MoodEntryEditScreen(
                 }
             }
             
-            // Description input
+            // Açıklama girişi
             OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("How are you feeling?") },
+                value = aciklama,
+                onValueChange = { aciklama = it },
+                label = { Text("Nasıl hissediyorsun?") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
             
             Spacer(modifier = Modifier.weight(1f))
             
-            // Save button
+            // Kaydet butonu
             Button(
                 onClick = {
-                    val newMood = Mood(
+                    val yeniMood = Mood(
                         id = mood?.id ?: 0,
                         date = mood?.date ?: Date(),
-                        emoji = selectedEmoji,
-                        description = description
+                        emoji = seciliEmoji,
+                        description = aciklama
                     )
-                    onSave(newMood)
-                    showSaveConfirmation = true
+                    onSave(yeniMood)
+                    kayitOnay = true
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Save")
+                Text("Kaydet")
             }
         }
         
-        if (showSaveConfirmation) {
+        if (kayitOnay) {
             AlertDialog(
-                onDismissRequest = { showSaveConfirmation = false },
-                title = { Text("Success") },
-                text = { Text("The message has been saved") },
+                onDismissRequest = { kayitOnay = false },
+                title = { Text("Başarılı") },
+                text = { Text("Mesaj kaydedildi") },
                 confirmButton = {
-                    TextButton(onClick = { showSaveConfirmation = false }) {
-                        Text("OK")
+                    TextButton(onClick = { kayitOnay = false }) {
+                        Text("Tamam")
                     }
                 }
             )
@@ -368,7 +368,7 @@ fun MoodEntryEditScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodItem(mood: Mood, onClick: () -> Unit) {
+fun MoodSatir(mood: Mood, onClick: () -> Unit) {
     val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
     
     Card(
@@ -404,16 +404,16 @@ fun MoodItem(mood: Mood, onClick: () -> Unit) {
 }
 
 @Composable
-fun GreetingByTime() {
-    val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
-    val greeting = when (hour) {
-        in 5..11 -> "Good morning"
-        in 12..17 -> "Good afternoon"
-        in 18..22 -> "Good evening"
-        else -> "Good night"
+fun ZamanSelamlama() {
+    val saat = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
+    val selam = when (saat) {
+        in 5..11 -> "Günaydın"
+        in 12..17 -> "İyi öğlenler"
+        in 18..22 -> "İyi akşamlar"
+        else -> "İyi geceler"
     }
     Text(
-        text = greeting,
+        text = selam,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier
             .fillMaxWidth()

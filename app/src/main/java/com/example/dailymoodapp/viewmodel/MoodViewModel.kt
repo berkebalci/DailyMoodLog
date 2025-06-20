@@ -8,27 +8,32 @@ import com.example.dailymoodapp.data.MoodDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-class MoodViewModel(application: Application) : AndroidViewModel(application) {
-    private val database = MoodDatabase.getDatabase(application)
-    private val moodDao = database.moodDao()
-    
-    val moods: Flow<List<Mood>> = moodDao.getAllMoods()
+// MoodViewModel: Mood verilerini yönetmek için basit ViewModel
+class MoodViewModel(app: Application) : AndroidViewModel(app) {
+    // Veritabanı ve DAO'yu al
+    private val db = MoodDatabase.getDatabase(app)
+    private val dao = db.moodDao()
+    // Mood listesini akış olarak al
+    val moodList: Flow<List<Mood>> = dao.getAllMoods()
 
-    fun addMood(mood: Mood) {
+    // Mood ekle (veritabanına kaydet)
+    fun moodEkle(mood: Mood) {
         viewModelScope.launch {
-            moodDao.insertMood(mood)
+            dao.insertMood(mood)
         }
     }
 
-    fun updateMood(mood: Mood) {
+    // Mood güncelle
+    fun moodGuncelle(mood: Mood) {
         viewModelScope.launch {
-            moodDao.updateMood(mood)
+            dao.updateMood(mood)
         }
     }
 
-    fun deleteMood(mood: Mood) {
+    // Mood sil
+    fun moodSil(mood: Mood) {
         viewModelScope.launch {
-            moodDao.deleteMood(mood)
+            dao.deleteMood(mood)
         }
     }
 } 
