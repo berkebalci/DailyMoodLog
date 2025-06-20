@@ -2,73 +2,73 @@ package com.example.dailymoodapp.data
 
 import kotlin.random.Random
 
-// Motivasyon önerilerini basitçe döndüren sınıf
-class MotivasyonOner {
+// Returns simple motivation suggestions
+class MotivationSuggestionEngine {
     companion object {
-        private val mutlu = listOf(
-            "Pozitif enerjin bulaşıcı! Böyle devam.",
-            "Bu mutluluk hak edilmiş. Küçük şeyleri de kutla!",
-            "Gülüşün birinin gününü güzelleştiriyor.",
-            "Mutlu olmak bir seçim, harikasın!",
-            "İyi ruh halin süper gücün. Başkalarına da ilham ol!"
+        private val happy = listOf(
+            "Your positive energy is contagious! Keep spreading joy wherever you go.",
+            "This happiness is well-deserved. Celebrate your wins, big and small!",
+            "Your smile brightens someone's day. Keep that beautiful energy flowing!",
+            "Happiness is a choice you're making every day. You're doing amazing!",
+            "Your good mood is your superpower. Use it to inspire others!"
         )
-        private val sakin = listOf(
-            "İç huzur çok güzel bir şey. Merkezini buluyorsun.",
-            "Bu sakinlik senin gücün. Dengede kalabilirsin.",
-            "Huzur içten gelir. Güzel bir şey inşa ediyorsun.",
-            "Sükunetin bir hediye. Çevrendekilerle paylaş.",
-            "Durgunlukta bilgelik var. Doğru yoldasın."
+        private val calm = listOf(
+            "Inner peace is a beautiful state to be in. You're finding your center.",
+            "This calmness is your strength. Trust in your ability to stay grounded.",
+            "Peace comes from within. You're cultivating something precious.",
+            "Your tranquility is a gift. Share it with the world around you.",
+            "In stillness, you find wisdom. You're on the right path."
         )
-        private val uzgun = listOf(
-            "Üzgün hissetmek normal. Duyguların geçici.",
-            "Bu da geçecek. Sandığından güçlüsün.",
-            "Kendine nazik ol. İyileşmek zaman ister.",
-            "Duyguların önemli. Destek istemekten çekinme.",
-            "Üzüntü insan olmanın parçası. Yalnız değilsin."
+        private val sad = listOf(
+            "It's okay to feel sad. Your emotions are valid and temporary.",
+            "This too shall pass. You're stronger than you know.",
+            "Be gentle with yourself today. Healing takes time and patience.",
+            "Your feelings matter. Don't hesitate to reach out for support.",
+            "Sadness is part of being human. You're not alone in this."
         )
-        private val sinirli = listOf(
-            "Öfken sana bir şey anlatıyor. Dinle.",
-            "Derin nefes al. Tepkini sen seçebilirsin.",
-            "Kızgın olmak normal ama seni yönetmesin.",
-            "Bu enerjiyi iyi bir şeye dönüştür. Yapabilirsin.",
-            "Duyguların geçerli. Sağlıklı şekilde ifade et."
+        private val angry = listOf(
+            "Your anger is telling you something important. Listen to what it needs.",
+            "Take deep breaths. You have the power to choose your response.",
+            "It's okay to feel angry, but don't let it control you.",
+            "Channel this energy into something positive. You're capable of great things.",
+            "Your feelings are valid. Find healthy ways to express them."
         )
-        private val yorgun = listOf(
-            "Dinlenmek zayıflık değil, ihtiyaçtır.",
-            "Vücudunu dinle, neye ihtiyacı varsa onu ver.",
-            "Çok çalıştın, biraz şarj ol.",
-            "Kendine vakit ayırmak bencillik değil.",
-            "Enerjin geri gelecek, sabırlı ol."
+        private val tired = listOf(
+            "Rest is not a sign of weakness. It's essential for your well-being.",
+            "Listen to your body. It's asking for what it needs.",
+            "You've been working hard. It's time to recharge and refresh.",
+            "Self-care isn't selfish. Take the time you need to rest.",
+            "Your energy will return. Be patient and kind to yourself."
         )
-        private val ask = listOf(
-            "Aşk güzel bir duygu, tadını çıkar.",
-            "Kalbin açık ve dolu, bu harika.",
-            "Aşk dünyayı döndürüyor, sen de bunun parçasısın.",
-            "Bu aşk duyguları çok değerli, bırak gitmesin.",
-            "Verecek çok sevgin var, dünya buna ihtiyaç duyuyor."
+        private val love = listOf(
+            "Love is a beautiful emotion. Cherish these feelings.",
+            "Your heart is open and full. That's a beautiful thing.",
+            "Love makes the world go round. You're part of something special.",
+            "These feelings of love are precious. Hold onto them.",
+            "You have so much love to give. The world needs more of that."
         )
-        private val melankoli = listOf(
-            "Melankolinin de bir güzelliği var.",
-            "Bu sessiz anlar derin olabilir, hayatı işliyorsun.",
-            "Dalgın hissetmek normal, büyüyorsun.",
-            "Duyarlılığın bir güç, başkalarını anlamanı sağlıyor.",
-            "Bu ruh hali geçecek, duygular doğal olarak değişir."
+        private val melancholy = listOf(
+            "Melancholy has its own beauty. It's part of your depth.",
+            "These quiet moments can be profound. You're processing life.",
+            "It's okay to feel contemplative. You're growing and evolving.",
+            "Your sensitivity is a strength. It helps you understand others.",
+            "This mood will shift. Trust in the natural flow of emotions."
         )
-        // Emojiye göre motivasyon önerisi döndürür
-        fun getir(emoji: String): String {
+        // Returns a motivation suggestion for the given emoji
+        fun getForMood(emoji: String): String {
             return when (emoji) {
-                "😊" -> mutlu.random()
-                "😌" -> sakin.random()
-                "😢" -> uzgun.random()
-                "😡" -> sinirli.random()
-                "😴" -> yorgun.random()
-                "😍" -> ask.random()
-                "😔" -> melankoli.random()
-                else -> mutlu.random()
+                "😊" -> happy.random()
+                "😌" -> calm.random()
+                "😢" -> sad.random()
+                "😡" -> angry.random()
+                "😴" -> tired.random()
+                "😍" -> love.random()
+                "😔" -> melancholy.random()
+                else -> happy.random()
             }
         }
-        // Yükleme süresini taklit eder
-        fun yuklemeSuresi(): Long {
+
+        fun loadingTime(): Long {
             return Random.nextLong(1500, 3000)
         }
     }

@@ -18,11 +18,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dailymoodapp.data.AktiviteOner
+import com.example.dailymoodapp.data.ActivitySuggestionEngine
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
+
 fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
     var isLoading by remember { mutableStateOf(true) }
     var suggestion by remember { mutableStateOf("") }
@@ -42,8 +43,8 @@ fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
         if (visible) {
             isLoading = true
             showSuggestion = false
-            delay(AktiviteOner.yuklemeSuresi())
-            suggestion = AktiviteOner.getir(moodEmoji)
+            delay(ActivitySuggestionEngine.loadingTime())
+            suggestion = ActivitySuggestionEngine.getForMood(moodEmoji)
             isLoading = false
             delay(200)
             showSuggestion = true
@@ -70,7 +71,7 @@ fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
                     .padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Başlık ve yenile butonu
+                // Header and refresh button
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,13 +82,13 @@ fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
                     ) {
                         Icon(
                             imageVector = Icons.Default.Star,
-                            contentDescription = "Aktivite",
+                            contentDescription = "Activity",
                             tint = MaterialTheme.colorScheme.tertiary,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Bugünlük Aktivite",
+                            text = "Today's Activity",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -110,7 +111,7 @@ fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Yeni aktivite getir",
+                                contentDescription = "Get new activity",
                                 tint = MaterialTheme.colorScheme.tertiary,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -136,7 +137,7 @@ fun DailyActivitySuggestionBox(moodEmoji: String, visible: Boolean) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "Güzel bir aktivite aranıyor...",
+                                text = "Looking for a good activity...",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
                             )

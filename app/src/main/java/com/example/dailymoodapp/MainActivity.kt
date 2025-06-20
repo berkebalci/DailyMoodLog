@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                AnaEkran(viewModel)
+                MainScreen(viewModel)
             }
         }
     }
@@ -46,56 +46,56 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnaEkran(viewModel: MoodViewModel) {
-    val moodlar by viewModel.moodList.collectAsState(initial = emptyList())
-    var seciliMood by remember { mutableStateOf<Mood?>(null) }
-    var duzenleEkrani by remember { mutableStateOf(false) }
-    var silOnay by remember { mutableStateOf(false) }
+fun MainScreen(viewModel: MoodViewModel) {
+    val moods by viewModel.moodList.collectAsState(initial = emptyList())
+    var selectedMood by remember { mutableStateOf<Mood?>(null) }
+    var showEditScreen by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
     
-    if (duzenleEkrani) {
-        MoodDuzenleEkran(
-            mood = seciliMood,
-            onSave = { guncelMood ->
-                if (seciliMood == null) {
-                    viewModel.moodEkle(guncelMood)
+    if (showEditScreen) {
+        MoodEditScreen(
+            mood = selectedMood,
+            onSave = { updatedMood ->
+                if (selectedMood == null) {
+                    viewModel.moodEkle(updatedMood)
                 } else {
-                    viewModel.moodGuncelle(guncelMood)
+                    viewModel.moodGuncelle(updatedMood)
                 }
-                duzenleEkrani = false
-                seciliMood = null
+                showEditScreen = false
+                selectedMood = null
             },
             onBackClick = {
-                duzenleEkrani = false
-                seciliMood = null
+                showEditScreen = false
+                selectedMood = null
             }
         )
-    } else if (seciliMood != null) {
-        MoodDetayEkran(
-            mood = seciliMood!!,
-            onBackClick = { seciliMood = null },
-            onEditClick = { duzenleEkrani = true },
-            onDeleteClick = { silOnay = true }
+    } else if (selectedMood != null) {
+        MoodDetailScreen(
+            mood = selectedMood!!,
+            onBackClick = { selectedMood = null },
+            onEditClick = { showEditScreen = true },
+            onDeleteClick = { showDeleteConfirmation = true }
         )
         
-        if (silOnay) {
+        if (showDeleteConfirmation) {
             AlertDialog(
-                onDismissRequest = { silOnay = false },
-                title = { Text("Mood Sil") },
-                text = { Text("Bu mood kaydını silmek istediğine emin misin?") },
+                onDismissRequest = { showDeleteConfirmation = false },
+                title = { Text("Delete Mood") },
+                text = { Text("Are you sure you want to delete this mood entry?") },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            viewModel.moodSil(seciliMood!!)
-                            seciliMood = null
-                            silOnay = false
+                            viewModel.moodSil(selectedMood!!)
+                            selectedMood = null
+                            showDeleteConfirmation = false
                         }
                     ) {
-                        Text("Sil")
+                        Text("Delete")
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { silOnay = false }) {
-                        Text("Vazgeç")
+                    TextButton(onClick = { showDeleteConfirmation = false }) {
+                        Text("Cancel")
                     }
                 }
             )
@@ -116,11 +116,11 @@ fun AnaEkran(viewModel: MoodViewModel) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                        seciliMood = null
-                        duzenleEkrani = true
+                        selectedMood = null
+                        showEditScreen = true
                     }
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Mood Ekle")
+                    Icon(Icons.Default.Add, contentDescription = "Add Mood")
                 }
             }
         ) { paddingValues ->
@@ -129,15 +129,15 @@ fun AnaEkran(viewModel: MoodViewModel) {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                ZamanSelamlama()
-                if (moodlar.isEmpty()) {
+                GreetingByTime()
+                if (moods.isEmpty()) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Henüz mood eklenmedi. '+' butonuna basıp ilk moodunu ekle.",
+                            text = "No moods yet. Tap the '+' button to add your first mood.",
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -147,10 +147,10 @@ fun AnaEkran(viewModel: MoodViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        items(moodlar) { mood ->
-                            MoodSatir(
+                        items(moods) { mood ->
+                            MoodItem(
                                 mood = mood,
-                                onClick = { seciliMood = mood }
+                                onClick = { selectedMood = mood }
                             )
                         }
                     }
@@ -162,30 +162,30 @@ fun AnaEkran(viewModel: MoodViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodDetayEkran(
+fun MoodDetailScreen(
     mood: Mood,
     onBackClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()) }
-    var motivasyonGoster by remember { mutableStateOf(false) }
+    var motivationVisible by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mood Detayları") },
+                title = { Text("Mood Details") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = onEditClick) {
-                        Icon(Icons.Default.Edit, contentDescription = "Düzenle")
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                     IconButton(onClick = onDeleteClick) {
-                        Icon(Icons.Default.Delete, contentDescription = "Sil")
+                        Icon(Icons.Default.Delete, contentDescription = "Delete")
                     }
                 }
             )
@@ -222,7 +222,7 @@ fun MoodDetayEkran(
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = "Açıklama",
+                            text = "Description",
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -236,19 +236,19 @@ fun MoodDetayEkran(
             item {
                 MotivationSuggestionBox(
                     moodEmoji = mood.emoji,
-                    onLoaded = { motivasyonGoster = true }
+                    onLoaded = { motivationVisible = true }
                 )
             }
             item {
                 DailyActivitySuggestionBox(
                     moodEmoji = mood.emoji,
-                    visible = motivasyonGoster
+                    visible = motivationVisible
                 )
             }
             item {
                 MusicSuggestionBox(
                     moodEmoji = mood.emoji,
-                    visible = motivasyonGoster
+                    visible = motivationVisible
                 )
             }
         }
@@ -257,24 +257,24 @@ fun MoodDetayEkran(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodDuzenleEkran(
+fun MoodEditScreen(
     mood: Mood?,
     onSave: (Mood) -> Unit,
     onBackClick: () -> Unit
 ) {
-    var seciliEmoji by remember { mutableStateOf(mood?.emoji ?: "😊") }
-    var aciklama by remember { mutableStateOf(mood?.description ?: "") }
-    var kayitOnay by remember { mutableStateOf(false) }
+    var selectedEmoji by remember { mutableStateOf(mood?.emoji ?: "😊") }
+    var description by remember { mutableStateOf(mood?.description ?: "") }
+    var showSaveConfirmation by remember { mutableStateOf(false) }
     
-    val emojiler = listOf("😊", "😌", "😢", "😡", "😴", "😍", "😔")
+    val emojis = listOf("😊", "😌", "😢", "😡", "😴", "😍", "😔")
     
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (mood == null) "Mood Ekle" else "Mood Düzenle") },
+                title = { Text(if (mood == null) "Add Mood" else "Edit Mood") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Geri")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -287,31 +287,31 @@ fun MoodDuzenleEkran(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Emoji seçimi
+            // Emoji selection
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                emojiler.forEach { emoji ->
+                emojis.forEach { emoji ->
                     Box(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(CircleShape)
                             .background(
-                                if (emoji == seciliEmoji) 
+                                if (emoji == selectedEmoji) 
                                     MaterialTheme.colorScheme.primaryContainer 
                                 else 
                                     Color.Transparent
                             )
                             .border(
                                 width = 2.dp,
-                                color = if (emoji == seciliEmoji) 
+                                color = if (emoji == selectedEmoji) 
                                     MaterialTheme.colorScheme.primary 
                                 else 
                                     Color.Transparent,
                                 shape = CircleShape
                             )
-                            .clickable { seciliEmoji = emoji },
+                            .clickable { selectedEmoji = emoji },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -322,43 +322,43 @@ fun MoodDuzenleEkran(
                 }
             }
             
-            // Açıklama girişi
+            // Description input
             OutlinedTextField(
-                value = aciklama,
-                onValueChange = { aciklama = it },
-                label = { Text("Nasıl hissediyorsun?") },
+                value = description,
+                onValueChange = { description = it },
+                label = { Text("How are you feeling?") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3
             )
             
             Spacer(modifier = Modifier.weight(1f))
             
-            // Kaydet butonu
+            // Save button
             Button(
                 onClick = {
-                    val yeniMood = Mood(
+                    val newMood = Mood(
                         id = mood?.id ?: 0,
                         date = mood?.date ?: Date(),
-                        emoji = seciliEmoji,
-                        description = aciklama
+                        emoji = selectedEmoji,
+                        description = description
                     )
-                    onSave(yeniMood)
-                    kayitOnay = true
+                    onSave(newMood)
+                    showSaveConfirmation = true
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Kaydet")
+                Text("Save")
             }
         }
         
-        if (kayitOnay) {
+        if (showSaveConfirmation) {
             AlertDialog(
-                onDismissRequest = { kayitOnay = false },
-                title = { Text("Başarılı") },
-                text = { Text("Mesaj kaydedildi") },
+                onDismissRequest = { showSaveConfirmation = false },
+                title = { Text("Success") },
+                text = { Text("Mood saved successfully.") },
                 confirmButton = {
-                    TextButton(onClick = { kayitOnay = false }) {
-                        Text("Tamam")
+                    TextButton(onClick = { showSaveConfirmation = false }) {
+                        Text("OK")
                     }
                 }
             )
@@ -368,7 +368,7 @@ fun MoodDuzenleEkran(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoodSatir(mood: Mood, onClick: () -> Unit) {
+fun MoodItem(mood: Mood, onClick: () -> Unit) {
     val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
     
     Card(
@@ -404,16 +404,16 @@ fun MoodSatir(mood: Mood, onClick: () -> Unit) {
 }
 
 @Composable
-fun ZamanSelamlama() {
-    val saat = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
-    val selam = when (saat) {
-        in 5..11 -> "Günaydın"
-        in 12..17 -> "İyi öğlenler"
-        in 18..22 -> "İyi akşamlar"
-        else -> "İyi geceler"
+fun GreetingByTime() {
+    val hour = remember { Calendar.getInstance().get(Calendar.HOUR_OF_DAY) }
+    val greeting = when (hour) {
+        in 5..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        in 18..22 -> "Good evening"
+        else -> "Good night"
     }
     Text(
-        text = selam,
+        text = greeting,
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier
             .fillMaxWidth()

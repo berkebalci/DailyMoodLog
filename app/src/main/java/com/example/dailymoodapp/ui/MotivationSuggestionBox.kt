@@ -18,12 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dailymoodapp.data.MotivasyonOner
+import com.example.dailymoodapp.data.MotivationSuggestionEngine
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
+
 fun MotivationSuggestionBox(
     moodEmoji: String,
     onLoaded: (() -> Unit)? = null
@@ -35,7 +36,7 @@ fun MotivationSuggestionBox(
     var hasCalledOnLoaded by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     
-    // Yükleme noktaları animasyonu
+    // Loading dots animation
     val loadingDots by rememberInfiniteTransition().animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -50,19 +51,19 @@ fun MotivationSuggestionBox(
         showSuggestion = false
         hasCalledOnLoaded = false
         
-        // Yükleme süresini taklit et
-        delay(MotivasyonOner.yuklemeSuresi())
+        // Simulate loading time
+        delay(MotivationSuggestionEngine.loadingTime())
         
-        // Öneriyi al
-        suggestion = MotivasyonOner.getir(moodEmoji)
+        // Get suggestion
+        suggestion = MotivationSuggestionEngine.getForMood(moodEmoji)
         
-        // Animasyonla göster
+        // Show suggestion with animation
         isLoading = false
         delay(200)
         showSuggestion = true
     }
     
-    // İlk kez yüklendiğinde onLoaded'ı çağır
+    // Call onLoaded when suggestion is visible for the first time after loading
     LaunchedEffect(showSuggestion) {
         if (showSuggestion && !hasCalledOnLoaded) {
             hasCalledOnLoaded = true
@@ -85,7 +86,7 @@ fun MotivationSuggestionBox(
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Başlık ve yenile butonu
+            // Header and refresh button
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -96,20 +97,20 @@ fun MotivationSuggestionBox(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
-                        contentDescription = "Motivasyon",
+                        contentDescription = "Motivation",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Senin için motivasyon",
+                        text = "Motivation for You",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
                 
-                // Yenile butonu (sadece yüklendiğinde göster)
+                // Refresh button (only show when suggestion is loaded)
                 AnimatedVisibility(
                     visible = showSuggestion,
                     enter = fadeIn(animationSpec = tween(300)) + scaleIn(
@@ -123,13 +124,13 @@ fun MotivationSuggestionBox(
                 ) {
                     IconButton(
                         onClick = { 
-                            refreshTrigger++ // Yenile
+                            refreshTrigger++ // Refresh
                         },
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
-                            contentDescription = "Yeni motivasyon getir",
+                            contentDescription = "Get new motivation",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -139,7 +140,7 @@ fun MotivationSuggestionBox(
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // Yükleniyor veya öneri içeriği
+            // Loading or suggestion content
             AnimatedContent(
                 targetState = isLoading,
                 transitionSpec = {
@@ -153,19 +154,19 @@ fun MotivationSuggestionBox(
                 }
             ) { loading ->
                 if (loading) {
-                    // Yükleniyor animasyonu
+                    // Loading animation
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Kişisel motivasyon hazırlanıyor...",
+                            text = "Generating personalized motivation...",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         
-                        // Yükleme noktaları
+                        // Loading dots
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
@@ -184,7 +185,7 @@ fun MotivationSuggestionBox(
                         }
                     }
                 } else {
-                    // Öneri içeriği
+                    // Suggestion content
                     AnimatedVisibility(
                         visible = showSuggestion,
                         enter = fadeIn(animationSpec = tween(500)) + expandVertically(
@@ -197,7 +198,7 @@ fun MotivationSuggestionBox(
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Süs tırnak işaretleri
+                            // Decorative quote marks
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -218,7 +219,7 @@ fun MotivationSuggestionBox(
                             
                             Spacer(modifier = Modifier.height(8.dp))
                             
-                            // Öneri metni
+                            // Suggestion text
                             Text(
                                 text = suggestion,
                                 style = MaterialTheme.typography.bodyLarge,
@@ -229,7 +230,7 @@ fun MotivationSuggestionBox(
                             
                             Spacer(modifier = Modifier.height(8.dp))
                             
-                            // Süs çizgisi
+                            // Decorative line
                             Box(
                                 modifier = Modifier
                                     .width(60.dp)

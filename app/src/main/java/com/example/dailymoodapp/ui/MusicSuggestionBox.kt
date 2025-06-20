@@ -19,12 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.dailymoodapp.data.MuzikOner
+import com.example.dailymoodapp.data.MusicSuggestionEngine
 
 @Composable
+// Music suggestion box
 fun MusicSuggestionBox(moodEmoji: String, visible: Boolean) {
     val context = LocalContext.current
-    val musicUrl = remember(moodEmoji) { MuzikOner.getir(moodEmoji) }
+    val musicUrl = remember(moodEmoji) { MusicSuggestionEngine.getForMood(moodEmoji) }
 
     AnimatedVisibility(
         visible = visible,
@@ -51,13 +52,13 @@ fun MusicSuggestionBox(moodEmoji: String, visible: Boolean) {
                 ) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
-                        contentDescription = "Müzik Önerisi",
+                        contentDescription = "Music Suggestion",
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Moduna Uygun Müzik",
+                        text = "Music for Your Mood",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -65,7 +66,7 @@ fun MusicSuggestionBox(moodEmoji: String, visible: Boolean) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Dinlemek için tıkla!",
+                    text = "Tap to listen!",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
                     textAlign = TextAlign.Center

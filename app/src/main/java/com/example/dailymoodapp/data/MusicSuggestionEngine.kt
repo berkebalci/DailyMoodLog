@@ -2,9 +2,9 @@ package com.example.dailymoodapp.data
 
 import kotlin.random.Random
 
-// Müzik önerilerini basitçe döndüren nesne
-object MuzikOner {
-    private val muzikHarita = mapOf(
+
+object MusicSuggestionEngine {
+    private val musicMap = mapOf(
         "😊" to listOf(
             "https://www.youtube.com/watch?v=ZbZSe6N_BXs", // Happy - Pharrell Williams
             "https://open.spotify.com/track/6JV2JOEocMgcZxYSZelKcc", // Can't Stop The Feeling - Justin Timberlake
@@ -41,13 +41,13 @@ object MuzikOner {
             "https://www.youtube.com/watch?v=RB-RcX5DS5A" // Let It Go - James Bay
         )
     )
-    // Emojiye göre müzik linki döndürür
-    fun getir(emoji: String): String {
-        val sarkilar = muzikHarita[emoji]
-        return if (sarkilar != null && sarkilar.isNotEmpty()) {
-            sarkilar[Random.nextInt(sarkilar.size)]
+
+    fun getForMood(mood: String): String {
+        val songs = musicMap[mood]
+        return if (songs != null && songs.isNotEmpty()) {
+            songs[Random.nextInt(songs.size)]
         } else {
-            // Bilinmeyen mood için varsayılan şarkı
+
             "https://www.youtube.com/watch?v=dQw4w9WgXcQ" // Rick Astley - Never Gonna Give You Up
         }
     }

@@ -2,73 +2,73 @@ package com.example.dailymoodapp.data
 
 import kotlin.random.Random
 
-// Günlük aktivite önerilerini basitçe döndüren sınıf
-class AktiviteOner {
+// Returns simple daily activity suggestions
+class ActivitySuggestionEngine {
     companion object {
-        private val mutlu = listOf(
-            "Parkta yürüyüş yap, güneşin tadını çıkar!",
-            "Bir arkadaşını ara, mutluluğunu paylaş.",
-            "En sevdiğin hareketli müziği dinle.",
-            "Çizim ya da yazı gibi yaratıcı bir şey yap.",
-            "Kendine en sevdiğin atıştırmalıktan al."
+        private val happy = listOf(
+            "Go for a walk in the park and enjoy the sunshine!",
+            "Call a friend and share your happiness.",
+            "Listen to your favorite upbeat music.",
+            "Do something creative, like drawing or writing.",
+            "Treat yourself to your favorite snack."
         )
-        private val sakin = listOf(
-            "Kısa bir meditasyon ya da nefes egzersizi dene.",
-            "Rahat bir köşede kitap oku.",
-            "Rahatlatıcı bir duş al.",
-            "Hafif esneme ya da yoga yap.",
-            "Bir mum yak, ortamı huzurlu yap."
+        private val calm = listOf(
+            "Try a short meditation or breathing exercise.",
+            "Read a book in a cozy spot.",
+            "Take a relaxing bath or shower.",
+            "Do some gentle stretching or yoga.",
+            "Light a candle and enjoy the calm atmosphere."
         )
-        private val uzgun = listOf(
-            "Duygularını bir deftere yaz.",
-            "Rahatlatıcı bir film/dizi izle.",
-            "Güvendiğin biriyle konuş.",
-            "Dışarıda hafif bir yürüyüş yap.",
-            "Kendine küçük bir iyilik yap."
+        private val sad = listOf(
+            "Write your feelings in a journal.",
+            "Watch a comforting movie or show.",
+            "Reach out to someone you trust.",
+            "Go for a gentle walk outside.",
+            "Do something kind for yourself."
         )
-        private val sinirli = listOf(
-            "Koşu yap ya da yastık yumrukla.",
-            "Seni sinirlendiren şeyi yaz, sonra kağıdı yırt.",
-            "Sakinleştirici müzik dinle.",
-            "Derin nefes al, 10'a kadar say.",
-            "Duygularını çizerek ifade et."
+        private val angry = listOf(
+            "Do a physical activity, like running or punching a pillow.",
+            "Write down what's making you angry, then tear up the paper.",
+            "Listen to calming music.",
+            "Take a few deep breaths and count to ten.",
+            "Try drawing or painting your feelings."
         )
-        private val yorgun = listOf(
-            "Kısa bir şekerleme yap.",
-            "Bir bardak su iç, esne.",
-            "Temiz hava almak için dışarı çık.",
-            "Gözlerini kapatıp rahatlatıcı müzik dinle.",
-            "Odanı hızlıca toparla."
+        private val tired = listOf(
+            "Take a short nap if you can.",
+            "Drink a glass of water and stretch.",
+            "Step outside for some fresh air.",
+            "Listen to relaxing music with your eyes closed.",
+            "Do a quick tidy-up of your space."
         )
-        private val ask = listOf(
-            "Sevdiğin birine not yaz.",
-            "Birine küçük bir iyilik yap.",
-            "Sevdiğinle vakit geçir.",
-            "Mutlu fotoğraflara bak.",
-            "Duygularını sanatla ifade et."
+        private val love = listOf(
+            "Write a note to someone you care about.",
+            "Do a small act of kindness for someone.",
+            "Spend quality time with a loved one.",
+            "Look through happy photos or memories.",
+            "Express your feelings through art or music."
         )
-        private val melankoli = listOf(
-            "Yavaşça yürü, düşün.",
-            "Moduna uygun müzik dinle.",
-            "Şiir ya da kısa hikaye yaz.",
-            "Doğada vakit geçir (pencere bile olur).",
-            "Yeni bir hobi dene ya da eskiye dön."
+        private val melancholy = listOf(
+            "Take a slow walk and reflect on your thoughts.",
+            "Listen to music that matches your mood.",
+            "Write poetry or a short story.",
+            "Spend time in nature, even if just by a window.",
+            "Try a new hobby or revisit an old one."
         )
-        // Emojiye göre aktivite önerisi döndürür
-        fun getir(emoji: String): String {
+
+        fun getForMood(emoji: String): String {
             return when (emoji) {
-                "😊" -> mutlu.random()
-                "😌" -> sakin.random()
-                "😢" -> uzgun.random()
-                "😡" -> sinirli.random()
-                "😴" -> yorgun.random()
-                "😍" -> ask.random()
-                "😔" -> melankoli.random()
-                else -> mutlu.random()
+                "😊" -> happy.random()
+                "😌" -> calm.random()
+                "😢" -> sad.random()
+                "😡" -> angry.random()
+                "😴" -> tired.random()
+                "😍" -> love.random()
+                "😔" -> melancholy.random()
+                else -> happy.random()
             }
         }
-        // Yükleme süresini taklit eder
-        fun yuklemeSuresi(): Long {
+
+        fun loadingTime(): Long {
             return Random.nextLong(1200, 2500)
         }
     }
