@@ -125,6 +125,7 @@ fun MainScreen(viewModel: MoodViewModel) {
             }
         ) { paddingValues ->
             Column(
+
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
